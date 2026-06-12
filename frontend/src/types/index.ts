@@ -118,6 +118,7 @@ export interface Order {
 export interface OrderItem {
   product_id: string;
   product_name: string;
+  image?: string;
   sku: string;
   variant_info: Record<string, string>;
   quantity: number;
