@@ -58,7 +58,7 @@ const PremiumProductCard = ({ product }: { product: Product }) => {
         product_id: product._id,
         product_name: product.name,
         sku: product.variants[0].sku,
-        variant_info: { variant: product.variants[0].sku },
+        variant_info: { size: product.variants[0].size, color: product.variants[0].color },
         quantity: 1,
         unit_price: product.variants[0].price,
         subtotal: product.variants[0].price,
@@ -304,68 +304,102 @@ export default function HomePage() {
         <div className="max-w-[90rem] mx-auto px-6 sm:px-12">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
             <div>
-              <h2 className="text-3xl lg:text-4xl font-medium tracking-tight text-slate-900 mb-4">Danh mục sản phẩm</h2>
-              <p className="text-slate-500 font-light text-lg">Khám phá các sản phẩm phù hợp với nhu cầu của bạn.</p>
+              <h2 className="text-3xl lg:text-5xl font-medium tracking-tight text-slate-900 mb-4">Danh mục sản phẩm</h2>
+              <p className="text-slate-500 font-light text-lg max-w-2xl">Khám phá các thiết bị công nghệ phù hợp với nhu cầu của bạn</p>
             </div>
-            <Link href="/products" className="hidden md:flex items-center gap-2 text-sm font-semibold text-slate-900 hover:text-indigo-600 transition-colors">
+            <Link href="/products" className="hidden md:flex items-center gap-2 text-sm font-semibold text-[#2563EB] hover:text-[#1d4ed8] transition-colors bg-blue-50 px-5 py-2.5 rounded-full hover:bg-blue-100">
               Xem tất cả <ArrowRight size={16} />
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-            {categoriesWithCount.map((cat, i) => (
-              <button 
-                key={i} 
-                onClick={() => setActiveCategory(activeCategory === cat.id ? null : cat.id)}
-                className={`text-left relative overflow-hidden bg-white rounded-[1.5rem] border transition-all duration-300 group flex flex-col ${
-                  activeCategory === cat.id 
-                    ? 'border-indigo-500 shadow-[0_0_0_2px_rgba(99,102,241,0.1)]' 
-                    : 'border-slate-100 hover:border-slate-300 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-1'
-                }`}
-              >
-                {/* High Quality Image Container */}
-                <div className="w-full h-36 overflow-hidden bg-slate-100 relative">
-                  <img 
-                    src={cat.image} 
-                    alt={cat.name} 
-                    loading="lazy"
-                    className={`w-full h-full object-cover transition-transform duration-700 ease-out ${
-                      activeCategory === cat.id ? 'scale-110' : 'group-hover:scale-110'
-                    }`} 
-                  />
-                  {/* Dark gradient overlay for text readability */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-slate-900/10 to-transparent opacity-80" />
-                  
-                  {/* Badges */}
-                  {cat.badge && (
-                    <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-slate-900 text-[10px] font-bold uppercase tracking-widest px-2.5 py-1.5 rounded-full shadow-sm z-10">
-                      {cat.badge}
+          {/* Cards Container - Horizontal Scroll on Mobile, Grid on Tablet/Desktop */}
+          <div className="flex overflow-x-auto pb-8 -mx-6 px-6 md:grid md:grid-cols-3 lg:grid-cols-5 md:overflow-visible md:px-0 md:pb-0 gap-6 snap-x snap-mandatory hide-scrollbar">
+            {categoriesWithCount.map((cat, i) => {
+              const isActive = activeCategory === cat.id;
+              
+              return (
+                <button 
+                  key={i} 
+                  onClick={() => setActiveCategory(isActive ? null : cat.id)}
+                  className={`relative text-left group flex-shrink-0 w-[280px] md:w-auto h-[360px] rounded-[24px] overflow-hidden transition-all duration-300 snap-center focus:outline-none ${
+                    isActive 
+                      ? 'shadow-[0_20px_50px_-12px_rgba(37,99,235,0.25)] -translate-y-2' 
+                      : 'shadow-sm border border-slate-200/50 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2'
+                  }`}
+                >
+                  {/* Gradient Border for Active State */}
+                  {isActive && (
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#2563EB] to-[#06B6D4] p-[2px] rounded-[24px] z-20 pointer-events-none">
+                      <div className="w-full h-full bg-white rounded-[22px]" />
                     </div>
                   )}
-                  
-                  {/* Floating Icon */}
-                  <div className={`absolute -bottom-6 right-4 w-12 h-12 rounded-2xl flex items-center justify-center shadow-[0_8px_16px_rgba(0,0,0,0.1)] border-4 border-white transition-all duration-300 z-10 ${
-                    activeCategory === cat.id ? 'bg-indigo-600 text-white -translate-y-2' : `${cat.color} group-hover:-translate-y-2 bg-white`
-                  }`}>
-                    <cat.icon size={20} strokeWidth={2} />
-                  </div>
-                </div>
 
-                {/* Category Content */}
-                <div className="p-6 pt-8 bg-white flex-1">
-                  <h3 className={`font-semibold text-lg mb-1.5 transition-colors duration-300 ${
-                    activeCategory === cat.id ? 'text-indigo-600' : 'text-slate-900 group-hover:text-indigo-600'
-                  }`}>
-                    {cat.name}
-                  </h3>
-                  <p className="text-sm text-slate-400 font-light flex items-center gap-1.5">
-                    <span className={`w-1.5 h-1.5 rounded-full ${activeCategory === cat.id ? 'bg-indigo-500' : 'bg-slate-300'}`} />
-                    {cat.count} sản phẩm
-                  </p>
-                </div>
-              </button>
-            ))}
+                  <div className="relative w-full h-full bg-white z-10 flex flex-col rounded-[22px] overflow-hidden">
+                    {/* Image Area - 70% Height */}
+                    <div className="relative h-[70%] w-full overflow-hidden bg-slate-100">
+                      <img 
+                        src={cat.image} 
+                        alt={cat.name} 
+                        loading="lazy"
+                        className={`w-full h-full object-cover transition-transform duration-[400ms] ease-out ${
+                          isActive ? 'scale-105' : 'group-hover:scale-105'
+                        }`} 
+                      />
+                      {/* Dark Gradient Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent opacity-90" />
+                      
+                      {/* Special Badges */}
+                      {cat.badge && (
+                        <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-slate-900 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-sm z-10">
+                          {cat.badge}
+                        </div>
+                      )}
+
+                      {/* Floating Icon */}
+                      <div className={`absolute bottom-4 left-5 w-10 h-10 rounded-xl flex items-center justify-center shadow-lg backdrop-blur-md transition-all duration-300 z-10 ${
+                        isActive ? 'bg-[#2563EB] text-white' : 'bg-white/20 text-white border border-white/20 group-hover:bg-white group-hover:text-slate-900'
+                      }`}>
+                        <cat.icon size={18} strokeWidth={2} />
+                      </div>
+                    </div>
+
+                    {/* Content Area - 30% Height */}
+                    <div className="h-[30%] p-5 bg-white flex flex-col justify-center relative">
+                      <h3 className={`font-bold text-lg mb-1 tracking-tight transition-colors duration-300 ${
+                        isActive ? 'text-[#2563EB]' : 'text-slate-900 group-hover:text-[#2563EB]'
+                      }`}>
+                        {cat.name}
+                      </h3>
+                      
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm text-slate-500 font-medium flex items-center gap-2">
+                          <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-[#2563EB]' : 'bg-slate-300'}`} />
+                          {cat.count} sản phẩm
+                        </p>
+                        
+                        {/* Reveal CTA Animation */}
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ease-out bg-slate-50 text-slate-400 group-hover:bg-[#2563EB] group-hover:text-white ${
+                          isActive ? 'bg-[#2563EB] text-white opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0'
+                        }`}>
+                          <ArrowRight size={14} strokeWidth={2.5} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
           </div>
+          
+          <style dangerouslySetInnerHTML={{__html: `
+            .hide-scrollbar::-webkit-scrollbar {
+              display: none;
+            }
+            .hide-scrollbar {
+              -ms-overflow-style: none;
+              scrollbar-width: none;
+            }
+          `}} />
         </div>
       </section>
 
